@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<!--
+ -:<>
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            position: relative;
+            background-color: rgb(255, 255, 255);
+        }
+
+        #welcome {
+            font-size: 12rem;
+            user-select: none;
+            background-color: red;
+            color: white;
+            border: 1px solid black;
+            cursor: pointer;
+        }
+
+        #nuke {
+            z-index: 99;
+            position: relative;
+            cursor: pointer;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: yellow;
+            border: none;
+            box-shadow: 0px 10px 0px 0px rgba(255, 217, 0, 0.9);
+        }
+
+        #nuke:hover {
+            background-color: rgb(223, 223, 0);
+        }
+
+        #nuke:active {
+            transform: translateY(5px);
+            box-shadow: 0px 5px 0px 0px rgba(204, 173, 0, 0.9);
+        }
+
+        #worshipping {
+            position: fixed;
+            display: none;
+            color: whitesmoke;
+            background-color: rgba(103, 7, 7, 0.588);
+            width: 20%;
+            height: 100px;
+            z-index: 2;
+            font-size: 40px;
+        }
+
+        .boom {
+            position: fixed;
+            width: 20%;
+            z-index: 3
+        }
+
+        .spamKim {
+            position: fixed;
+        }
+
+        .kim {
+            background-image: url("./kim_the_clapper.gif");
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+</head>
+
+<body class="body">
+    <p id="welcome" aria-disabled="false">Hello world!</p>
+    <center>
+        <button id="nuke">Nuke</button>
+    </center>
+    <div class="kim"></div>
+    <footer>
+        <a href="https://github.com/hueychen27/nuclear_website" target="_blank">Github link</a>
+    </footer>
+    <script>
+        const welcome = document.getElementById("welcome");
+        const nuke = document.getElementById("nuke");
+        let clicked = false;
+        let brightness = 255; // rgb(255, 255, 255) is white and we want to make it black with rgb(0, 0, 0)
+
+        async function repeat(fun, times) {
+            for (let i = 0; i < times; i++) {
+                await fun();
+            }
+        }
+
+        welcome.addEventListener("click", function () {
+            if (clicked) return false;
+            let isGoodbye = this.textContent[0].toLowerCase() == "g"
+            this.textContent = isGoodbye ? "Hello world!" : "Goodbye world!"
+            this.style.backgroundColor = isGoodbye ? "red" : "gray";
+        })
+
+        nuke.addEventListener("click", async () => {
+            if (!clicked) {
+                welcome.textContent = "Goodbye world! Hello to nukes!"
+                welcome.style.backgroundColor = "gray";
+                welcome.setAttribute("aria-disabled", true);
+                const audio = new Audio("./March_in_step_1_2_3!.wav");
+                audio.loop = true;
+                audio.play(); // glory to our fat leader!!!!
+            }
+            const worshipping = document.createElement("marquee");
+            worshipping.style.display = "block";
+            worshipping.textContent = "WORSHIP HIM NOW!!!!!!!!!!!";
+            /*
+            kim jong loses more weight in the night than at daytime
+            */
+            worshipping.id = "worshipping";
+            worshipping.direction = Math.round(Math.random()) ? "left" : "right";
+            worshipping.scrollAmount = Math.round(Math.random()) ? 24 : 96;
+            worshipping.style.top = ((Math.random()) * (window.innerHeight - 40)) + "px";
+            worshipping.style.left = ((Math.random()) * (window.innerWidth)) + "px";
+            document.body.append(worshipping);
+            clicked = true;
+            if (brightness > 0) brightness -= 2.5;
+            document.body.style.backgroundColor = `rgb(${brightness}, ${brightness}, ${brightness})`
+
+            const img = new Image();
+            const img2 = new Image();
+            img2.classList.add("kim", "spamKim")
+            img2.style.top = ((Math.random()) * (window.innerHeight - img.height)) + "px";
+            img2.style.left = ((Math.random()) * (window.innerWidth - img.width)) + "px";
+            document.body.append(img2);
+            img.className = "boom";
+            let explosion = Math.round(Math.random() + 1) == 1
+            img.src = explosion ? "./me_when_transparent.gif" : "./explosion.gif";
+            await img.decode();
+            img.style.top = ((Math.random()) * (window.innerHeight - img.height)) + "px";
+            img.style.left = ((Math.random()) * (window.innerWidth - img.width)) + "px";
+
+            img.addEventListener("start", (e) => {
+                /**
+                 * @type {HTMLImageElement}
+                */
+                const target = e.target;
+                setTimeout(() => { target.remove() }, explosion ? 1700 : 2100)
+            }, { once: true })
+            img.dispatchEvent(new CustomEvent("start", { target: img }))
+            repeat(() => { document.body.append(img) }, Math.floor(Math.random() * 4 + 1))
+        })
+    </script>
+</body>
+
+</html>
